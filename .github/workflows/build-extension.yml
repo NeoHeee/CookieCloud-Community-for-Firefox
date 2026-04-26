@@ -1,0 +1,84 @@
+name: Build Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: ext/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: ./ext
+        run: pnpm install
+
+      - name: Build for ${{ matrix.browser }}
+        working-directory: ./ext
+        run: pnpm run build:${{ matrix.browser }}
+
+      - name: Zip for ${{ matrix.browser }}
+        working-directory: ./ext
+        run: pnpm run zip:${{ matrix.browser }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookie-cloud-${{ matrix.browser }}
+          path: ext/.output/*.zip
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Chrome artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cookie-cloud-chrome
+          path: ./artifacts/chrome
+
+      - name: Download Firefox artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cookie-cloud-firefox
+          path: ./artifacts/firefox
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./artifacts/chrome/*.zip
+            ./artifacts/firefox/*.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
