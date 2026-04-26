@@ -3,14 +3,16 @@
   "displayName": "CookieCloud",
   "description": "Sync cookies between browses",
   "private": true,
-  "version": "0.3.1",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
     "build": "wxt build",
+    "build:chrome": "wxt build -b chrome",
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
+    "zip:chrome": "wxt zip -b chrome",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare"
