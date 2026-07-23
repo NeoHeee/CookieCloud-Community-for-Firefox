@@ -1,14 +1,14 @@
 <div align="center">
   <img src="ext/public/icon/icon.png" width="112" alt="CookieCloud">
   <h1>CookieCloud</h1>
-  <p><strong>Encrypt and synchronize browser cookies and optional local storage with your own server.</strong></p>
-  <p>This fork keeps the lightweight, self-hosted design of the upstream project and adds a Mozilla-signed Firefox Desktop build.</p>
+  <p><strong>将浏览器 Cookie 与可选的 Local Storage 加密同步到你自己的服务器</strong></p>
+  <p>保留原项目轻量、自托管的设计，并提供经过 Mozilla 签名的 Firefox Desktop 版本。</p>
 
   <p>
     <a href="README_cn.md">简体中文</a> ·
     <a href="README.md">English</a> ·
-    <a href="https://github.com/NeoHeee/CookieCloud/releases/tag/firefox-v1.0.3">Latest release</a> ·
-    <a href="PRIVACY.md">Privacy notice</a>
+    <a href="https://github.com/NeoHeee/CookieCloud/releases/tag/firefox-v1.0.3">最新版本</a> ·
+    <a href="PRIVACY.md">隐私说明</a>
   </p>
 
   <p>
@@ -19,63 +19,63 @@
   </p>
 
   <p>
-    <a href="https://github.com/NeoHeee/CookieCloud/releases/download/firefox-v1.0.3/CookieCloud-Firefox-v1.0.3-signed.xpi"><strong>Download the signed Firefox build</strong></a>
+    <a href="https://github.com/NeoHeee/CookieCloud/releases/download/firefox-v1.0.3/CookieCloud-Firefox-v1.0.3-signed.xpi"><strong>下载 Firefox 正式签名版</strong></a>
   </p>
 </div>
 
 ---
 
-## What is CookieCloud?
+## 这是什么
 
-CookieCloud is a lightweight cookie synchronization system made of a browser extension and a self-hostable server. The extension reads cookies within the scope selected by the user and, when explicitly enabled, matching website local-storage values. The payload is encrypted locally in the browser before it is sent to the server configured by the user.
+CookieCloud 是一套轻量的 Cookie 同步工具，由浏览器扩展和可自建的服务端组成。扩展读取用户指定范围内的 Cookie，并可在明确启用后同步对应网站的 Local Storage；数据在浏览器本地加密后，发送到用户配置的 CookieCloud 服务端。
 
-This repository is forked from [easychen/CookieCloud](https://github.com/easychen/CookieCloud) and adds:
+本仓库复刻自 [easychen/CookieCloud](https://github.com/easychen/CookieCloud)，主要补充：
 
-- Firefox Desktop build and compatibility metadata;
-- a Mozilla-signed `.xpi` for self-distribution;
-- reproducible GitHub Actions builds and packaged-manifest checks;
-- an AMO source-review bundle and privacy notice;
-- clearer installation, security, and self-hosting documentation.
+- Firefox Desktop 构建与兼容配置；
+- Mozilla 非公开分发签名版 `.xpi`；
+- GitHub Actions 可复现构建与 Manifest 校验；
+- AMO 源码审核包和隐私说明；
+- 更清晰的安装、安全及自建服务说明。
 
-> This is a community-maintained Firefox adaptation. It is not an official public Firefox Add-ons Store release from the upstream author.
+> 本仓库是社区维护的 Firefox 适配分支，不是原作者在 Firefox Add-ons 商店公开发布的官方版本。
 
-## Browser support
+## 浏览器支持
 
-| Browser | Status | Distribution |
+| 浏览器 | 状态 | 获取方式 |
 |---|---|---|
-| Firefox Desktop | ✅ Tested and Mozilla-signed | GitHub Releases in this repository |
-| Chrome | ✅ Supported upstream | Chrome Web Store |
-| Microsoft Edge | ✅ Supported upstream | Edge Add-ons |
-| Firefox for Android | 🧪 Not declared compatible yet | Separate adaptation and device testing planned |
-| Other Chromium browsers | ⚠️ Often work, but not fully verified | Refer to upstream documentation |
+| Firefox Desktop | ✅ 已测试、Mozilla 已签名 | 本仓库 GitHub Release |
+| Chrome | ✅ 上游支持 | Chrome Web Store |
+| Microsoft Edge | ✅ 上游支持 | Edge Add-ons |
+| Firefox Android | 🧪 暂未声明兼容 | 后续单独适配与真机测试 |
+| 其他 Chromium 浏览器 | ⚠️ 通常可用但未完整验证 | 参考上游说明 |
 
-Firefox and Chromium use different cookie representations. **Do not use the same upload UUID for Firefox and Chrome/Edge**, or one browser may overwrite data from the other.
+Firefox 和 Chromium 的 Cookie 数据结构存在差异，**不要让 Firefox 与 Chrome/Edge 使用同一个上传 UUID**，避免相互覆盖。
 
-## Install on Firefox
+## Firefox 安装
 
-1. Download [CookieCloud-Firefox-v1.0.3-signed.xpi](https://github.com/NeoHeee/CookieCloud/releases/download/firefox-v1.0.3/CookieCloud-Firefox-v1.0.3-signed.xpi).
-2. Open Firefox **Add-ons and themes**.
-3. Open the gear menu and choose **Install Add-on From File**.
-4. Select the downloaded `.xpi` and approve the installation.
-5. Open CookieCloud and configure your server URL, a Firefox-specific UUID, and a strong password.
+1. 下载 [CookieCloud-Firefox-v1.0.3-signed.xpi](https://github.com/NeoHeee/CookieCloud/releases/download/firefox-v1.0.3/CookieCloud-Firefox-v1.0.3-signed.xpi)。
+2. 在 Firefox 打开“扩展和主题”。
+3. 点击右上角齿轮，选择“从文件安装附加组件”。
+4. 选择下载的 `.xpi` 文件并确认安装。
+5. 打开扩展，填写服务端地址、独立 UUID 和高强度密码。
 
-The signed build remains installed after Firefox restarts and does not require temporary loading through `about:debugging`.
+正式签名版重启 Firefox 后仍会保留，无需再通过 `about:debugging` 临时载入。
 
-## Security first
+## 安全须知
 
-Cookies are high-value authentication credentials. CookieCloud needs broad permissions to read and restore cookies and website data, so treat it as a sensitive security tool:
+Cookie 是网站登录状态的重要凭据。CookieCloud 为实现同步，需要申请读取网站 Cookie 和访问网站数据的高权限。请按高敏感工具管理：
 
-- Prefer a trusted self-hosted CookieCloud server instead of a public test service.
-- Use HTTPS for all remote access; never expose the service over plain public HTTP.
-- Generate independent random UUID and password values; use at least a 24-character password.
-- Do not synchronize online banking, payments, primary email, password managers, domain registrars, Cloudflare, NAS administration, or other critical accounts.
-- Local storage may contain long-lived tokens. Leave it disabled unless it is required.
-- Consider a dedicated browser profile containing only sites that genuinely need synchronization.
-- Rotate credentials periodically and delete server-side and local data when the service is retired.
+- 优先使用自己的 CookieCloud 服务端，不建议长期使用公共测试服务器；
+- 服务端必须使用 HTTPS，避免通过公网明文传输；
+- UUID 和密码均使用独立随机值，密码建议至少 24 位；
+- 不要同步网银、支付、主邮箱、密码管理器、域名注册商、Cloudflare、NAS 管理后台等关键账户；
+- Local Storage 可能包含长期 Token，不需要时不要开启；
+- 建议单独创建一个浏览器配置文件，只登录确有同步需求的网站；
+- 定期更换密码，停用时清除服务端数据和本地扩展配置。
 
-CookieCloud encrypts synchronization content locally before upload, but encryption does not eliminate the risks of weak passwords, a compromised browser, a malicious server, or leaked configuration. See the [privacy notice](PRIVACY.md).
+扩展在上传前会在浏览器本地加密同步内容，但加密不能消除弱密码、浏览器失陷、恶意服务端或配置泄露带来的风险。详见 [隐私说明](PRIVACY.md)。
 
-## Self-host the server
+## 自建服务端
 
 ### Docker Compose
 
@@ -90,25 +90,25 @@ services:
     volumes:
       - ./data:/data/api/data
     environment:
-      # Replace this with a long, unpredictable path.
+      # 建议更换为随机且不易猜测的路径
       API_ROOT: /cookiecloud-your-random-path
 ```
 
-Start the service:
+启动：
 
 ```bash
 docker compose up -d
 ```
 
-Example server URL in the extension:
+扩展中的服务器地址示例：
 
 ```text
 https://cookie.example.com/cookiecloud-your-random-path
 ```
 
-For production use, place CookieCloud behind a trusted HTTPS reverse proxy or Cloudflare Tunnel. Do not expose port `8088` as plain HTTP on the public internet.
+生产环境建议在 CookieCloud 前使用可信反向代理或 Cloudflare Tunnel 提供 HTTPS，不要直接将 `8088` 的 HTTP 服务暴露到公网。
 
-### Docker command
+### Docker 命令
 
 ```bash
 docker run -d \
@@ -120,18 +120,18 @@ docker run -d \
   easychen/cookiecloud:latest
 ```
 
-## Synchronization model
+## 使用方式
 
-CookieCloud is currently best used as a one-way synchronization system:
+CookieCloud 当前以单向同步思路使用：
 
-- one browser acts as the uploader;
-- other clients or applications consume the uploaded data;
-- avoid multiple browsers uploading to the same UUID;
-- keep Firefox and Chromium UUIDs separate.
+- 一个浏览器作为上传端；
+- 其他客户端或程序作为下载端；
+- 避免多个浏览器同时向同一个 UUID 上传；
+- Firefox 与 Chromium 必须分开配置 UUID。
 
-The synchronized format contains cookies and, when enabled, local-storage data. Extension configuration is stored locally in the browser.
+上传的数据格式包含 Cookie，以及启用时的 Local Storage。配置本身保存在浏览器本地。
 
-## Build the Firefox package
+## Firefox 源码构建
 
 ```bash
 git clone https://github.com/NeoHeee/CookieCloud.git
@@ -144,19 +144,19 @@ pnpm compile
 pnpm zip:firefox
 ```
 
-The unsigned build is created under:
+构建结果位于：
 
 ```text
 ext/dist/*firefox*.zip
 ```
 
-Unsigned ZIP files are intended for development and temporary testing. For normal Firefox installation, use the Mozilla-signed `.xpi` published in Releases.
+未签名 ZIP 仅适合开发调试。正式版 Firefox 长期安装应使用 Release 中经过 Mozilla 签名的 `.xpi`。
 
-See [ext/AMO_BUILD.md](ext/AMO_BUILD.md) for complete reproducible build details.
+详细可复现构建信息见 [ext/AMO_BUILD.md](ext/AMO_BUILD.md)。
 
-## API summary
+## API 简表
 
-Upload:
+上传：
 
 ```text
 POST /update
@@ -164,20 +164,20 @@ uuid=<UUID>
 encrypted=<ENCRYPTED_PAYLOAD>
 ```
 
-Download:
+下载：
 
 ```text
 GET /get/:uuid
 POST /get/:uuid
 ```
 
-The server stores the encrypted payload submitted by the extension. Refer to the upstream project for implementation details and cross-language decryption examples.
+服务端保存的是扩展上传的加密载荷。具体实现和跨语言解密示例请参考上游项目文档。
 
-## Upstream and license
+## 项目关系与许可证
 
-- Upstream project: [easychen/CookieCloud](https://github.com/easychen/CookieCloud)
-- Firefox fork: [NeoHeee/CookieCloud](https://github.com/NeoHeee/CookieCloud)
-- Privacy notice: [PRIVACY.md](PRIVACY.md)
-- License: [GNU General Public License v3.0](LICENSE)
+- 上游项目：[easychen/CookieCloud](https://github.com/easychen/CookieCloud)
+- Firefox 分支维护：[NeoHeee/CookieCloud](https://github.com/NeoHeee/CookieCloud)
+- 隐私说明：[PRIVACY.md](PRIVACY.md)
+- 许可证：[GNU General Public License v3.0](LICENSE)
 
-Thanks to easychen and every upstream contributor. Changes in this repository remain available under GPL-3.0.
+感谢原作者 easychen 及所有贡献者。本仓库的改动继续按照 GPL-3.0 发布。
