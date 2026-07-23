@@ -105,26 +105,7 @@ https://cookie.example.com/cookiecloud-your-random-path
 
 生产环境建议使用可信反向代理或 Cloudflare Tunnel 提供 HTTPS，不要直接将 `8088` 的 HTTP 服务暴露到公网。
 
-## Firefox 源码构建
 
-```bash
-git clone https://github.com/NeoHeee/CookieCloud-Community-for-Firefox.git
-cd CookieCloud-Community-for-Firefox/ext
-
-corepack enable
-corepack prepare pnpm@10.28.0 --activate
-pnpm install --frozen-lockfile
-pnpm compile
-pnpm zip:firefox
-```
-
-构建结果位于：
-
-```text
-ext/dist/*firefox*.zip
-```
-
-详细可复现构建信息见 [ext/AMO_BUILD.md](ext/AMO_BUILD.md)。
 
 ## 项目关系与许可证
 
