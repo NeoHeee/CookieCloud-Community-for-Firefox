@@ -55,5 +55,6 @@ jobs:
         with:
           name: cookiecloud-firefox
           path: ext/.output/*.zip
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
