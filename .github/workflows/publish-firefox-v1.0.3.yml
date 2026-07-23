@@ -42,7 +42,7 @@ jobs:
             >> /tmp/cookiecloud-firefox.b64
           base64 --decode /tmp/cookiecloud-firefox.b64 \
             > dist/CookieCloud-Firefox-v1.0.3-signed.xpi
-          echo "9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250  dist/CookieCloud-Firefox-v1.0.3-signed.xpi" | sha256sum -c -
+          echo "77a59ab3a5d51452f2b1e5236e3ba010c99e4fa45334b470ec0194c3635e71dd  dist/CookieCloud-Firefox-v1.0.3-signed.xpi" | sha256sum -c -
           test "$(stat -c%s dist/CookieCloud-Firefox-v1.0.3-signed.xpi)" = "258134"
           unzip -t dist/CookieCloud-Firefox-v1.0.3-signed.xpi
           unzip -l dist/CookieCloud-Firefox-v1.0.3-signed.xpi | grep -q "META-INF/manifest.mf"
@@ -78,7 +78,7 @@ jobs:
           - 不建议同步网银、支付、主邮箱、密码管理器及管理后台等高敏感账户。
 
           SHA256：
-          `9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250`
+          `77a59ab3a5d51452f2b1e5236e3ba010c99e4fa45334b470ec0194c3635e71dd`
 
           上游项目：https://github.com/easychen/CookieCloud
           隐私说明：https://github.com/NeoHeee/CookieCloud/blob/main/PRIVACY.md
