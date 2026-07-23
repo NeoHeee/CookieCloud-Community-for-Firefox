@@ -5,8 +5,6 @@
   <p>保留原项目轻量、自托管的设计，并提供经过 Mozilla 签名的 Firefox Desktop 版本。</p>
 
   <p>
-    <a href="README_cn.md">简体中文</a> ·
-    <a href="README.md">English</a> ·
     <a href="https://github.com/NeoHeee/CookieCloud/releases/tag/firefox-v1.0.3">最新版本</a> ·
     <a href="PRIVACY.md">隐私说明</a>
   </p>
