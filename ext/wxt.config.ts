@@ -15,6 +15,8 @@ export default defineConfig({
       'unlimitedStorage'
     ],
     host_permissions: ['<all_urls>'],
+    // Mozilla already supports data_collection_permissions, while the
+    // currently pinned WXT manifest types have not added the field yet.
     browser_specific_settings: {
       gecko: {
         id: 'cookiecloud-firefox@neoheee.github.io',
@@ -25,7 +27,7 @@ export default defineConfig({
       gecko_android: {
         strict_min_version: '120.0'
       }
-    }
+    } as any
   },
   vite: () => ({
     css: {
