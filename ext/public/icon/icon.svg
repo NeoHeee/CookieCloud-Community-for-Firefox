@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="CookieCloud Community for Firefox">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="8" x2="118" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1769F6"/>
+      <stop offset="1" stop-color="#08CBEA"/>
+    </linearGradient>
+    <mask id="cookieMask">
+      <rect width="128" height="128" fill="#000"/>
+      <circle cx="61" cy="65" r="29" fill="#fff"/>
+      <circle cx="84" cy="43" r="8" fill="#000"/>
+      <circle cx="91" cy="51" r="7" fill="#000"/>
+      <circle cx="96" cy="60" r="6" fill="#000"/>
+    </mask>
+  </defs>
+
+  <rect x="2" y="2" width="124" height="124" rx="29" fill="url(#bg)"/>
+
+  <g fill="#fff">
+    <circle cx="35" cy="66" r="21"/>
+    <circle cx="63" cy="48" r="29"/>
+    <circle cx="94" cy="67" r="22"/>
+    <rect x="34" y="56" width="61" height="31" rx="15"/>
+  </g>
+
+  <g>
+    <circle cx="61" cy="65" r="29" fill="#fff" mask="url(#cookieMask)"/>
+    <circle cx="61" cy="65" r="29" fill="none" stroke="#0A66C7" stroke-width="5" mask="url(#cookieMask)"/>
+    <circle cx="50" cy="55" r="4" fill="#0A66C7"/>
+    <circle cx="67" cy="61" r="3.5" fill="#0A66C7"/>
+    <circle cx="48" cy="72" r="5" fill="#0A66C7"/>
+    <circle cx="70" cy="76" r="3.2" fill="#0A66C7"/>
+    <circle cx="59" cy="82" r="2.3" fill="#0A66C7"/>
+  </g>
+
+  <g fill="none" stroke="#FF942E" stroke-width="4" stroke-linecap="round">
+    <path d="M92 102a14 14 0 0 1 7-12"/>
+    <path d="M105 89a14 14 0 0 1 12 12"/>
+    <path d="M115 109a14 14 0 0 1-19 0"/>
+  </g>
+  <g fill="#FF942E">
+    <circle cx="101" cy="88" r="5"/>
+    <circle cx="119" cy="105" r="5"/>
+    <circle cx="93" cy="105" r="5"/>
+  </g>
+</svg>
