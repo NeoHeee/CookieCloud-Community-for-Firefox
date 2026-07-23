@@ -50,6 +50,33 @@ jobs:
       - name: Build Firefox extension
         run: pnpm zip:firefox
 
+      - name: Verify Firefox manifest
+        run: |
+          ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
+          test -n "$ZIP_PATH"
+          unzip -p "$ZIP_PATH" manifest.json > /tmp/firefox-manifest.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const manifest = JSON.parse(
+            fs.readFileSync('/tmp/firefox-manifest.json', 'utf8')
+          );
+          const gecko = manifest.browser_specific_settings?.gecko;
+          const required = gecko?.data_collection_permissions?.required ?? [];
+
+          if (gecko?.id !== 'cookiecloud-firefox@neoheee.github.io') {
+            throw new Error('Firefox extension ID is missing or incorrect.');
+          }
+
+          for (const permission of ['websiteContent', 'browsingActivity']) {
+            if (!required.includes(permission)) {
+              throw new Error(`Missing Firefox data collection permission: ${permission}`);
+            }
+          }
+
+          console.log('Firefox manifest metadata verified.');
+          NODE
+
       - name: Upload Firefox package
         uses: actions/upload-artifact@v4
         with:
