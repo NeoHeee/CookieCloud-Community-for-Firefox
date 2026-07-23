@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   build-firefox:
-    name: Build Firefox package
+    name: Build Firefox Desktop + Android package
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -52,7 +52,7 @@ jobs:
       - name: Build Firefox extension
         run: pnpm zip:firefox
 
-      - name: Verify Firefox manifest
+      - name: Verify Firefox Desktop and Android manifest
         run: |
           ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
           test -n "$ZIP_PATH"
@@ -63,11 +63,21 @@ jobs:
           const manifest = JSON.parse(
             fs.readFileSync('/tmp/firefox-manifest.json', 'utf8')
           );
-          const gecko = manifest.browser_specific_settings?.gecko;
+          const settings = manifest.browser_specific_settings;
+          const gecko = settings?.gecko;
+          const geckoAndroid = settings?.gecko_android;
           const required = gecko?.data_collection_permissions?.required ?? [];
+
+          if (manifest.version !== '1.0.4') {
+            throw new Error(`Unexpected extension version: ${manifest.version}`);
+          }
 
           if (gecko?.id !== 'cookiecloud-firefox@neoheee.github.io') {
             throw new Error('Firefox extension ID is missing or incorrect.');
+          }
+
+          if (geckoAndroid?.strict_min_version !== '120.0') {
+            throw new Error('Firefox Android compatibility metadata is missing or incorrect.');
           }
 
           for (const permission of ['websiteContent', 'browsingActivity']) {
@@ -76,8 +86,16 @@ jobs:
             }
           }
 
-          console.log('Firefox manifest metadata verified.');
+          console.log('Firefox Desktop and Android manifest metadata verified.');
           NODE
+
+      - name: Lint packaged extension with Mozilla web-ext
+        run: |
+          ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
+          rm -rf /tmp/cookiecloud-firefox-lint
+          mkdir -p /tmp/cookiecloud-firefox-lint
+          unzip -q "$ZIP_PATH" -d /tmp/cookiecloud-firefox-lint
+          pnpm dlx web-ext@8 lint --source-dir /tmp/cookiecloud-firefox-lint
 
       - name: Create AMO source package
         working-directory: .
@@ -97,7 +115,7 @@ jobs:
             --exclude '.wxt' \
             ext/ "$SOURCE_DIR/ext/"
 
-          cp README.md README_cn.md LICENSE PRIVACY.md "$SOURCE_DIR/"
+          cp README.md LICENSE PRIVACY.md "$SOURCE_DIR/"
 
           (
             cd /tmp
@@ -110,7 +128,7 @@ jobs:
       - name: Upload Firefox package
         uses: actions/upload-artifact@v4
         with:
-          name: cookiecloud-firefox
+          name: cookiecloud-firefox-v1.0.4-desktop-android
           path: ext/dist/*firefox*.zip
           if-no-files-found: error
           retention-days: 30
@@ -118,7 +136,7 @@ jobs:
       - name: Upload AMO source package
         uses: actions/upload-artifact@v4
         with:
-          name: cookiecloud-firefox-amo-source
+          name: cookiecloud-firefox-v1.0.4-amo-source
           path: ext/dist/*amo-source.zip
           if-no-files-found: error
           retention-days: 30
