@@ -1,0 +1,82 @@
+name: Publish Firefox v1.0.3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".release-payload/firefox-v1.0.3/payload-*.b64"
+      - ".github/workflows/publish-firefox-v1.0.3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish signed Firefox XPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release payload
+        uses: actions/checkout@v4
+
+      - name: Reconstruct and verify signed XPI
+        run: |
+          mkdir -p dist
+          cat .release-payload/firefox-v1.0.3/payload-*.b64 \
+            | base64 --decode \
+            > dist/CookieCloud-Firefox-v1.0.3-signed.xpi
+          echo "9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250  dist/CookieCloud-Firefox-v1.0.3-signed.xpi" | sha256sum -c -
+          unzip -t dist/CookieCloud-Firefox-v1.0.3-signed.xpi
+          unzip -l dist/CookieCloud-Firefox-v1.0.3-signed.xpi | grep -q "META-INF/"
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > /tmp/release-notes.md <<'EOF'
+          ## CookieCloud Firefox v1.0.3
+
+          Mozilla-signed Firefox Desktop build of CookieCloud, prepared for self-distribution.
+
+          ### Highlights
+          - Mozilla-signed `.xpi` for normal Firefox installation
+          - Fixed Firefox extension ID: `cookiecloud-firefox@neoheee.github.io`
+          - Cookie and optional Local Storage synchronization with a user-selected CookieCloud server
+          - Local encryption before upload
+          - Reproducible Firefox build and AMO review documentation
+
+          ### Install
+          1. Download `CookieCloud-Firefox-v1.0.3-signed.xpi`.
+          2. Open Firefox **Add-ons and themes**.
+          3. Open the gear menu and choose **Install Add-on From File**.
+          4. Select the downloaded XPI.
+
+          ### Important
+          - Firefox Desktop is supported and tested.
+          - Firefox Android compatibility is not declared in this release.
+          - Use a Firefox-specific UUID; do not share an upload UUID with Chrome or Edge.
+          - Self-hosting the CookieCloud server over HTTPS is strongly recommended.
+          - Avoid synchronizing banking, payments, primary email, password managers, or administrative accounts.
+
+          SHA256:
+          `9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250`
+
+          Upstream: https://github.com/easychen/CookieCloud
+          Privacy notice: https://github.com/NeoHeee/CookieCloud/blob/main/PRIVACY.md
+          EOF
+
+          if gh release view firefox-v1.0.3 >/dev/null 2>&1; then
+            gh release edit firefox-v1.0.3 \
+              --title "CookieCloud Firefox v1.0.3" \
+              --notes-file /tmp/release-notes.md
+          else
+            gh release create firefox-v1.0.3 \
+              --target main \
+              --title "CookieCloud Firefox v1.0.3" \
+              --notes-file /tmp/release-notes.md
+          fi
+
+          gh release upload firefox-v1.0.3 \
+            dist/CookieCloud-Firefox-v1.0.3-signed.xpi \
+            --clobber
