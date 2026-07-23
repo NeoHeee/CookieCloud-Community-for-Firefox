@@ -1,0 +1,97 @@
+name: Publish verified Firefox v1.0.3
+
+on:
+  push:
+    branches:
+      - release/firefox-v1.0.3
+    paths:
+      - ".github/workflows/publish-firefox-v1.0.3-verified.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Verify and publish signed Firefox XPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release payload
+        uses: actions/checkout@v4
+
+      - name: Reconstruct signed XPI
+        run: |
+          mkdir -p dist
+          cat \
+            .release-payload/firefox-v1.0.3/payload-00.b64 \
+            .release-payload/firefox-v1.0.3/payload-01.b64 \
+            .release-payload/firefox-v1.0.3/payload-02.b64 \
+            .release-payload/firefox-v1.0.3/payload-03.b64 \
+            .release-payload/firefox-v1.0.3/payload-04.b64 \
+            .release-payload/firefox-v1.0.3/payload-05.b64 \
+            .release-payload/firefox-v1.0.3/payload-06.b64 \
+            > /tmp/cookiecloud-firefox.b64
+          head -c 29180 \
+            .release-payload/firefox-v1.0.3/payload-07.b64 \
+            >> /tmp/cookiecloud-firefox.b64
+          base64 --decode /tmp/cookiecloud-firefox.b64 \
+            > dist/CookieCloud-Firefox-v1.0.3-signed.xpi
+
+      - name: Verify checksum and Mozilla signature files
+        run: |
+          echo "9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250  dist/CookieCloud-Firefox-v1.0.3-signed.xpi" | sha256sum -c -
+          test "$(stat -c%s dist/CookieCloud-Firefox-v1.0.3-signed.xpi)" = "258134"
+          unzip -t dist/CookieCloud-Firefox-v1.0.3-signed.xpi
+          unzip -l dist/CookieCloud-Firefox-v1.0.3-signed.xpi | grep -q "META-INF/manifest.mf"
+          unzip -l dist/CookieCloud-Firefox-v1.0.3-signed.xpi | grep -q "META-INF/mozilla.rsa"
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > /tmp/release-notes.md <<'EOF'
+          ## CookieCloud Firefox v1.0.3
+
+          Mozilla-signed Firefox Desktop build of CookieCloud, prepared for self-distribution.
+
+          ### 版本亮点
+          - Mozilla 正式签名，可直接安装到 Firefox 桌面版
+          - 固定扩展 ID：`cookiecloud-firefox@neoheee.github.io`
+          - 支持 Cookie 同步，以及用户主动启用后的 Local Storage 同步
+          - 数据在浏览器本地加密后上传到用户指定的 CookieCloud 服务端
+          - 提供可复现构建说明及 AMO 审核材料
+
+          ### 安装方法
+          1. 下载 `CookieCloud-Firefox-v1.0.3-signed.xpi`。
+          2. 打开 Firefox 的“扩展和主题”。
+          3. 点击齿轮菜单，选择“从文件安装附加组件”。
+          4. 选择下载的 XPI 文件并确认安装。
+
+          ### 使用提示
+          - 本版本支持并已测试 Firefox Desktop。
+          - 本版本尚未声明 Firefox Android 兼容性。
+          - Firefox 应使用独立 UUID，不要与 Chrome 或 Edge 上传端共用同一 UUID。
+          - 建议通过 HTTPS 使用自建 CookieCloud 服务端。
+          - 不建议同步网银、支付、主邮箱、密码管理器及管理后台等高敏感账户。
+
+          SHA256：
+          `9a783faac6e8db8184ccad4507540259216db053f6c7e52240f766c4d0283250`
+
+          上游项目：https://github.com/easychen/CookieCloud
+          隐私说明：https://github.com/NeoHeee/CookieCloud/blob/main/PRIVACY.md
+          EOF
+
+          if gh release view firefox-v1.0.3 >/dev/null 2>&1; then
+            gh release edit firefox-v1.0.3 \
+              --title "CookieCloud Firefox v1.0.3" \
+              --notes-file /tmp/release-notes.md
+          else
+            gh release create firefox-v1.0.3 \
+              --target main \
+              --title "CookieCloud Firefox v1.0.3" \
+              --notes-file /tmp/release-notes.md
+          fi
+
+          gh release upload firefox-v1.0.3 \
+            dist/CookieCloud-Firefox-v1.0.3-signed.xpi \
+            --clobber
