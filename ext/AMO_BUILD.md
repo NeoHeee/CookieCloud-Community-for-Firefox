@@ -1,6 +1,6 @@
 # CookieCloud Firefox — AMO Build Instructions
 
-This document describes how to reproduce the unsigned Firefox extension package submitted to Mozilla Add-ons (AMO).
+This document describes how to reproduce the unsigned Firefox Desktop and Firefox for Android extension package submitted to Mozilla Add-ons (AMO).
 
 ## Source layout
 
@@ -34,6 +34,8 @@ The resulting unsigned Firefox package is created under:
 ext/dist/*firefox*.zip
 ```
 
+The same package is used for Firefox Desktop and Firefox for Android. Platform compatibility is declared in the generated manifest.
+
 ## Build notes
 
 - No environment variables, API keys, secrets, or private services are required.
@@ -41,12 +43,23 @@ ext/dist/*firefox*.zip
 - `pnpm install --frozen-lockfile` must be used so dependency versions exactly match the lockfile.
 - WXT bundles the extension source and dependencies into the submitted package.
 - The Firefox-specific manifest metadata is generated from `ext/wxt.config.ts`.
+- Firefox for Android compatibility is declared with `browser_specific_settings.gecko_android` and a minimum supported version of Firefox 120.
 
 ## Verification
 
 The GitHub Actions workflow `.github/workflows/build-firefox.yml` performs the same build and verifies that the packaged `manifest.json` contains:
 
+- Version: `1.0.4`
 - Add-on ID: `cookiecloud-firefox@neoheee.github.io`
+- Firefox Android minimum version: `120.0`
 - Required data categories: `websiteContent` and `browsingActivity`
 
-The workflow also produces a separate AMO source archive containing these instructions and all source files required to reproduce the extension package.
+The workflow also:
+
+- runs TypeScript validation;
+- runs Mozilla `web-ext lint` against the packaged extension;
+- produces a separate AMO source archive containing these instructions and all source files required to reproduce the extension package.
+
+## Android testing note
+
+Manifest declaration and automated linting do not replace device testing. Before public AMO release, test installation, configuration, upload, download, scheduled synchronization, and Local Storage synchronization on a physical Android device or Android emulator running Firefox 120 or later.
