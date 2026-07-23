@@ -7,6 +7,11 @@ on:
     paths:
       - ".release-payload/firefox-v1.0.3/payload-*.b64"
       - ".github/workflows/publish-firefox-v1.0.3.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".release-trigger/firefox-v1.0.3"
   workflow_dispatch:
 
 permissions:
