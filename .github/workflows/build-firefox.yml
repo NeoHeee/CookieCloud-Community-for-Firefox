@@ -64,11 +64,15 @@ jobs:
       - name: Build Firefox extension
         run: pnpm zip
 
-      - name: Extract Firefox manifest
+      - name: Normalize Firefox package and extract manifest
         run: |
-          ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
-          test -n "$ZIP_PATH"
-          unzip -p "$ZIP_PATH" manifest.json > /tmp/firefox-manifest.json
+          BUILT_ZIP="$(find dist -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          test -n "$BUILT_ZIP"
+          RELEASE_ZIP="dist/CookieCloud-Community-for-Firefox-v1.0.4.zip"
+          if [ "$BUILT_ZIP" != "$RELEASE_ZIP" ]; then
+            cp "$BUILT_ZIP" "$RELEASE_ZIP"
+          fi
+          unzip -p "$RELEASE_ZIP" manifest.json > /tmp/firefox-manifest.json
           test -s /tmp/firefox-manifest.json
 
       - name: Upload packaged manifest
@@ -103,10 +107,9 @@ jobs:
 
       - name: Lint packaged extension with Mozilla web-ext
         run: |
-          ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
           rm -rf /tmp/cookiecloud-firefox-lint
           mkdir -p /tmp/cookiecloud-firefox-lint
-          unzip -q "$ZIP_PATH" -d /tmp/cookiecloud-firefox-lint
+          unzip -q dist/CookieCloud-Community-for-Firefox-v1.0.4.zip -d /tmp/cookiecloud-firefox-lint
           pnpm dlx web-ext@8 lint --source-dir /tmp/cookiecloud-firefox-lint
 
       - name: Create AMO source package
@@ -134,7 +137,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cookiecloud-community-for-firefox
-          path: ext/dist/*firefox*.zip
+          path: ext/dist/CookieCloud-Community-for-Firefox-v1.0.4.zip
           if-no-files-found: error
           retention-days: 30
 
