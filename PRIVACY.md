@@ -65,4 +65,4 @@ Material changes to this notice will be published in this repository with an upd
 
 Questions or security concerns can be submitted through the issue tracker for this repository:
 
-`https://github.com/NeoHeee/CookieCloud/issues`
+`https://github.com/NeoHeee/CookieCloud-Community-for-Firefox/issues`
