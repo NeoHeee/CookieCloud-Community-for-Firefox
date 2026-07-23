@@ -16,58 +16,15 @@ jobs:
     name: Publish signed Firefox XPI
     runs-on: ubuntu-latest
     steps:
-      - name: Check out release payload
+      - name: Check out exact signed payload
         uses: actions/checkout@v4
 
-      - name: Reconstruct signed XPI and collect diagnostics
+      - name: Reconstruct and verify signed XPI
         run: |
           mkdir -p dist
-          cat \
-            .release-payload/firefox-v1.0.3/payload-00.b64 \
-            .release-payload/firefox-v1.0.3/payload-01.b64 \
-            .release-payload/firefox-v1.0.3/payload-02.b64 \
-            .release-payload/firefox-v1.0.3/payload-03.b64 \
-            .release-payload/firefox-v1.0.3/payload-04.b64 \
-            .release-payload/firefox-v1.0.3/payload-05.b64 \
-            .release-payload/firefox-v1.0.3/payload-06.b64 \
-            > /tmp/cookiecloud-firefox.b64
-          head -c 29180 \
-            .release-payload/firefox-v1.0.3/payload-07.b64 \
-            >> /tmp/cookiecloud-firefox.b64
-
-          set +e
-          base64 --decode /tmp/cookiecloud-firefox.b64 \
+          cat .release-exact/firefox-v1.0.3/part-*.b64 \
+            | base64 --decode \
             > dist/CookieCloud-Firefox-v1.0.3-signed.xpi
-          DECODE_STATUS=$?
-          unzip -t dist/CookieCloud-Firefox-v1.0.3-signed.xpi \
-            > /tmp/unzip-test.txt 2>&1
-          UNZIP_STATUS=$?
-          set -e
-
-          {
-            echo "base64_chars=$(wc -c < /tmp/cookiecloud-firefox.b64)"
-            echo "decode_status=$DECODE_STATUS"
-            echo "xpi_bytes=$(wc -c < dist/CookieCloud-Firefox-v1.0.3-signed.xpi)"
-            echo "xpi_sha256=$(sha256sum dist/CookieCloud-Firefox-v1.0.3-signed.xpi | awk '{print $1}')"
-            echo "expected_bytes=258134"
-            echo "expected_sha256=77a59ab3a5d51452f2b1e5236e3ba010c99e4fa45334b470ec0194c3635e71dd"
-            echo "unzip_status=$UNZIP_STATUS"
-            echo "signature_entries:"
-            unzip -l dist/CookieCloud-Firefox-v1.0.3-signed.xpi 2>/dev/null | grep 'META-INF/' || true
-            echo "unzip_tail:"
-            tail -n 10 /tmp/unzip-test.txt || true
-          } | tee diagnostics.txt
-
-      - name: Upload release diagnostics
-        uses: actions/upload-artifact@v4
-        with:
-          name: firefox-v1.0.3-release-diagnostics
-          path: diagnostics.txt
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Verify signed XPI
-        run: |
           echo "77a59ab3a5d51452f2b1e5236e3ba010c99e4fa45334b470ec0194c3635e71dd  dist/CookieCloud-Firefox-v1.0.3-signed.xpi" | sha256sum -c -
           test "$(stat -c%s dist/CookieCloud-Firefox-v1.0.3-signed.xpi)" = "258134"
           unzip -t dist/CookieCloud-Firefox-v1.0.3-signed.xpi
