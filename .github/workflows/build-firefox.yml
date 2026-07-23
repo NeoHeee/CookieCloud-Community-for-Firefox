@@ -64,11 +64,23 @@ jobs:
       - name: Build Firefox extension
         run: pnpm zip
 
-      - name: Verify Firefox manifest
+      - name: Extract Firefox manifest
         run: |
           ZIP_PATH="$(find dist -maxdepth 1 -type f -name '*firefox*.zip' -print -quit)"
           test -n "$ZIP_PATH"
           unzip -p "$ZIP_PATH" manifest.json > /tmp/firefox-manifest.json
+          test -s /tmp/firefox-manifest.json
+
+      - name: Upload packaged manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-firefox-manifest
+          path: /tmp/firefox-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Verify Firefox manifest
+        run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
 
