@@ -28,6 +28,9 @@ export default defineConfig({
                 'browsingActivity'
               ]
             }
+          },
+          gecko_android: {
+            strict_min_version: '120.0'
           }
         }
       : undefined
