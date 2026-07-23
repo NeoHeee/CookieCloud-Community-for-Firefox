@@ -64,20 +64,26 @@ jobs:
       - name: Build Firefox extension
         run: pnpm zip
 
-      - name: Normalize Firefox package and extract manifest
+      - name: Normalize and extract Firefox package
         run: |
           BUILT_ZIP="$(find dist -maxdepth 1 -type f -name '*-firefox.zip' -print -quit)"
           test -n "$BUILT_ZIP"
           RELEASE_ZIP="dist/CookieCloud-Community-for-Firefox-v1.0.4.zip"
           cp "$BUILT_ZIP" "$RELEASE_ZIP"
-          unzip -p "$RELEASE_ZIP" manifest.json > /tmp/firefox-manifest.json
+
+          rm -rf /tmp/cookiecloud-firefox-package
+          mkdir -p /tmp/cookiecloud-firefox-package
+          unzip -q "$RELEASE_ZIP" -d /tmp/cookiecloud-firefox-package
+          cp /tmp/cookiecloud-firefox-package/manifest.json /tmp/firefox-manifest.json
           test -s /tmp/firefox-manifest.json
 
-      - name: Verify Firefox manifest
+      - name: Verify Firefox manifest and icons
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import path from 'node:path';
 
+          const packageRoot = '/tmp/cookiecloud-firefox-package';
           const manifest = JSON.parse(fs.readFileSync('/tmp/firefox-manifest.json', 'utf8'));
           const settings = manifest.browser_specific_settings;
           const gecko = settings?.gecko;
@@ -92,15 +98,42 @@ jobs:
             if (!required.includes(permission)) throw new Error(`Missing data category: ${permission}`);
           }
 
-          console.log('Firefox manifest verified.');
+          const expectedIcons = {
+            '16': 'icon/icon-small.svg',
+            '32': 'icon/icon-small.svg',
+            '48': 'icon/icon.svg',
+            '96': 'icon/icon.svg',
+            '128': 'icon/icon.svg'
+          };
+
+          for (const [size, iconPath] of Object.entries(expectedIcons)) {
+            if (manifest.icons?.[size] !== iconPath) {
+              throw new Error(`Incorrect manifest icon for ${size}px: ${manifest.icons?.[size]}`);
+            }
+            if (manifest.browser_action?.default_icon?.[size] !== iconPath) {
+              throw new Error(`Incorrect toolbar icon for ${size}px: ${manifest.browser_action?.default_icon?.[size]}`);
+            }
+          }
+
+          for (const iconPath of new Set(Object.values(expectedIcons))) {
+            const fullPath = path.join(packageRoot, iconPath);
+            const svg = fs.readFileSync(fullPath, 'utf8');
+            if (!svg.includes('<svg') || !svg.includes('xmlns="http://www.w3.org/2000/svg"')) {
+              throw new Error(`Invalid SVG namespace: ${iconPath}`);
+            }
+            if (!/viewBox="0 0 128 128"/.test(svg)) {
+              throw new Error(`Missing or incorrect SVG viewBox: ${iconPath}`);
+            }
+            if (/<script\b|<foreignObject\b|https?:\/\//i.test(svg.replace('http://www.w3.org/2000/svg', ''))) {
+              throw new Error(`Unsafe or external SVG content: ${iconPath}`);
+            }
+          }
+
+          console.log('Firefox manifest and scalable icons verified.');
           NODE
 
       - name: Lint packaged extension with Mozilla web-ext
-        run: |
-          rm -rf /tmp/cookiecloud-firefox-lint
-          mkdir -p /tmp/cookiecloud-firefox-lint
-          unzip -q dist/CookieCloud-Community-for-Firefox-v1.0.4.zip -d /tmp/cookiecloud-firefox-lint
-          pnpm dlx web-ext@8 lint --source-dir /tmp/cookiecloud-firefox-lint
+        run: pnpm dlx web-ext@8 lint --source-dir /tmp/cookiecloud-firefox-package
 
       - name: Create AMO source package
         working-directory: .
