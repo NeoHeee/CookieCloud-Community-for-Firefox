@@ -7,10 +7,12 @@ on:
       - main
     paths:
       - "ext/**"
+      - "PRIVACY.md"
       - ".github/workflows/build-firefox.yml"
   pull_request:
     paths:
       - "ext/**"
+      - "PRIVACY.md"
       - ".github/workflows/build-firefox.yml"
 
 permissions:
@@ -77,10 +79,46 @@ jobs:
           console.log('Firefox manifest metadata verified.');
           NODE
 
+      - name: Create AMO source package
+        working-directory: .
+        run: |
+          VERSION="$(node -p "require('./ext/package.json').version")"
+          SOURCE_NAME="cookiecloud-${VERSION}-amo-source"
+          SOURCE_DIR="/tmp/${SOURCE_NAME}"
+          SOURCE_ZIP="$GITHUB_WORKSPACE/ext/dist/${SOURCE_NAME}.zip"
+
+          rm -rf "$SOURCE_DIR"
+          mkdir -p "$SOURCE_DIR/ext"
+
+          rsync -a \
+            --exclude 'node_modules' \
+            --exclude 'dist' \
+            --exclude '.output' \
+            --exclude '.wxt' \
+            ext/ "$SOURCE_DIR/ext/"
+
+          cp README.md README_cn.md LICENSE PRIVACY.md "$SOURCE_DIR/"
+
+          (
+            cd /tmp
+            zip -qr "$SOURCE_ZIP" "$SOURCE_NAME"
+          )
+
+          test -s "$SOURCE_ZIP"
+          echo "Created AMO source archive: $SOURCE_ZIP"
+
       - name: Upload Firefox package
         uses: actions/upload-artifact@v4
         with:
           name: cookiecloud-firefox
-          path: ext/dist/*.zip
+          path: ext/dist/*firefox*.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload AMO source package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookiecloud-firefox-amo-source
+          path: ext/dist/*amo-source.zip
           if-no-files-found: error
           retention-days: 30
