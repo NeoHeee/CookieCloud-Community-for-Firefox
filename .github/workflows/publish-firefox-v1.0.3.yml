@@ -3,7 +3,7 @@ name: Publish Firefox v1.0.3
 on:
   push:
     branches:
-      - release/firefox-v1.0.3
+      - main
     paths:
       - ".release-payload/firefox-v1.0.3/payload-*.b64"
       - ".github/workflows/publish-firefox-v1.0.3.yml"
