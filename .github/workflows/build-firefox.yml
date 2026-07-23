@@ -1,0 +1,59 @@
+name: Build Firefox Extension
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "ext/**"
+      - ".github/workflows/build-firefox.yml"
+  pull_request:
+    paths:
+      - "ext/**"
+      - ".github/workflows/build-firefox.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-firefox:
+    name: Build Firefox package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ext
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ext/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check TypeScript
+        run: pnpm compile
+
+      - name: Build Firefox extension
+        run: pnpm zip:firefox
+
+      - name: Upload Firefox package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookiecloud-firefox
+          path: ext/dist/*.zip
+          if-no-files-found: error
+          retention-days: 30
