@@ -5,7 +5,7 @@
   <p>基于 easychen/CookieCloud 的 Firefox 社区适配版，同时面向 Firefox Desktop 与 Firefox Android。</p>
 
   <p>
-    <a href="https://github.com/NeoHeee/CookieCloud/actions/workflows/build-firefox.yml">获取最新构建</a> ·
+    <a href="https://github.com/NeoHeee/CookieCloud-Community-for-Firefox/actions/workflows/build-firefox.yml">获取最新构建</a> ·
     <a href="PRIVACY.md">隐私说明</a> ·
     <a href="https://github.com/easychen/CookieCloud">上游项目</a>
   </p>
@@ -136,8 +136,8 @@ https://cookie.example.com/cookiecloud-your-random-path
 ## Firefox 源码构建
 
 ```bash
-git clone https://github.com/NeoHeee/CookieCloud.git
-cd CookieCloud/ext
+git clone https://github.com/NeoHeee/CookieCloud-Community-for-Firefox.git
+cd CookieCloud-Community-for-Firefox/ext
 
 corepack enable
 corepack prepare pnpm@10.28.0 --activate
@@ -157,8 +157,8 @@ ext/dist/*firefox*.zip
 ## 项目关系与许可证
 
 - 上游项目：[easychen/CookieCloud](https://github.com/easychen/CookieCloud)
-- Firefox 社区适配：[NeoHeee/CookieCloud](https://github.com/NeoHeee/CookieCloud)
-- 问题反馈：[GitHub Issues](https://github.com/NeoHeee/CookieCloud/issues)
+- Firefox 社区适配：[NeoHeee/CookieCloud-Community-for-Firefox](https://github.com/NeoHeee/CookieCloud-Community-for-Firefox)
+- 问题反馈：[GitHub Issues](https://github.com/NeoHeee/CookieCloud-Community-for-Firefox/issues)
 - 隐私说明：[PRIVACY.md](PRIVACY.md)
 - 许可证：[GNU General Public License v3.0](LICENSE)
 
