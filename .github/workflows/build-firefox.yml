@@ -66,10 +66,14 @@ jobs:
 
       - name: Normalize and extract Firefox package
         run: |
+          VERSION="$(node -p "require('./package.json').version")"
           BUILT_ZIP="$(find dist -maxdepth 1 -type f -name '*-firefox.zip' -print -quit)"
           test -n "$BUILT_ZIP"
-          RELEASE_ZIP="dist/CookieCloud-Community-for-Firefox-v1.0.4.zip"
+
+          RELEASE_ZIP="dist/CookieCloud-Community-for-Firefox-v${VERSION}.zip"
           cp "$BUILT_ZIP" "$RELEASE_ZIP"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "RELEASE_ZIP=$RELEASE_ZIP" >> "$GITHUB_ENV"
 
           rm -rf /tmp/cookiecloud-firefox-package
           mkdir -p /tmp/cookiecloud-firefox-package
@@ -77,7 +81,7 @@ jobs:
           cp /tmp/cookiecloud-firefox-package/manifest.json /tmp/firefox-manifest.json
           test -s /tmp/firefox-manifest.json
 
-      - name: Verify Firefox manifest and icons
+      - name: Verify Firefox manifest, settings pages, and icons
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -85,17 +89,37 @@ jobs:
 
           const packageRoot = '/tmp/cookiecloud-firefox-package';
           const manifest = JSON.parse(fs.readFileSync('/tmp/firefox-manifest.json', 'utf8'));
+          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
           const settings = manifest.browser_specific_settings;
           const gecko = settings?.gecko;
           const android = settings?.gecko_android;
           const required = gecko?.data_collection_permissions?.required ?? [];
 
-          if (manifest.version !== '1.0.4') throw new Error(`Unexpected version: ${manifest.version}`);
-          if (gecko?.id !== 'cookiecloud-firefox@neoheee.github.io') throw new Error('Incorrect Firefox add-on ID.');
-          if (android?.strict_min_version !== '120.0') throw new Error('Incorrect Firefox Android minimum version.');
+          if (manifest.version !== packageJson.version) {
+            throw new Error(`Manifest/package version mismatch: ${manifest.version} vs ${packageJson.version}`);
+          }
+          if (gecko?.id !== 'cookiecloud-firefox@neoheee.github.io') {
+            throw new Error('Incorrect Firefox add-on ID.');
+          }
+          if (android?.strict_min_version !== '120.0') {
+            throw new Error('Incorrect Firefox Android minimum version.');
+          }
 
           for (const permission of ['websiteContent', 'browsingActivity']) {
             if (!required.includes(permission)) throw new Error(`Missing data category: ${permission}`);
+          }
+
+          if (manifest.browser_action?.default_popup !== 'popup.html') {
+            throw new Error(`Missing toolbar popup: ${manifest.browser_action?.default_popup}`);
+          }
+          if (manifest.options_ui?.page !== 'options.html' || manifest.options_ui?.open_in_tab !== true) {
+            throw new Error(`Invalid Firefox options_ui: ${JSON.stringify(manifest.options_ui)}`);
+          }
+
+          for (const page of ['popup.html', 'options.html']) {
+            if (!fs.existsSync(path.join(packageRoot, page))) {
+              throw new Error(`Missing packaged settings entrypoint: ${page}`);
+            }
           }
 
           const expectedIcons = {
@@ -129,7 +153,7 @@ jobs:
             }
           }
 
-          console.log('Firefox manifest and scalable icons verified.');
+          console.log(`Firefox v${manifest.version} popup, options page, Android metadata, and icons verified.`);
           NODE
 
       - name: Lint packaged extension with Mozilla web-ext
@@ -160,7 +184,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cookiecloud-community-for-firefox
-          path: ext/dist/CookieCloud-Community-for-Firefox-v1.0.4.zip
+          path: ext/dist/CookieCloud-Community-for-Firefox-v*.zip
           if-no-files-found: error
           retention-days: 30
 

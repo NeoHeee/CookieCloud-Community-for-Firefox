@@ -17,7 +17,13 @@ export default defineConfig({
     default_locale: 'zh_CN',
     icons: extensionIcons,
     browser_action: {
-      default_icon: extensionIcons
+      default_icon: extensionIcons,
+      default_title: 'CookieCloud',
+      default_popup: 'popup.html'
+    },
+    options_ui: {
+      page: 'options.html',
+      open_in_tab: true
     },
     permissions: [
       'cookies',
