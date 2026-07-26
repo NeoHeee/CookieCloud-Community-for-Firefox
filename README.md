@@ -11,7 +11,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Firefox-1.0.5-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.5">
+    <img src="https://img.shields.io/badge/Firefox-1.0.6-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.6">
     <img src="https://img.shields.io/badge/Desktop-supported-success" alt="Firefox Desktop supported">
     <img src="https://img.shields.io/badge/Android-Firefox%20120%2B-success" alt="Firefox Android 120+">
     <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0">
@@ -35,25 +35,25 @@
 
 ## 当前版本
 
-### Firefox v1.0.5
+### Firefox v1.0.6
 
-- Firefox Desktop：支持工具栏弹窗和附加组件管理器中的独立设置页；
-- Firefox Android：支持 Firefox 120 及以上版本，可从扩展入口或管理页面打开全屏设置页；
-- 设置入口：新增标准 `options_ui`，并保留 `browser_action.default_popup`；
-- Android 页面：适配全屏扩展页面、底部安全区和移动端触控尺寸；
-- 自动检查：TypeScript、Manifest、弹窗入口、设置页入口、扩展图标和 Mozilla `web-ext lint`；
-- 图标：采用 Firefox 原生支持的 SVG 矢量图标，小尺寸使用简化版本，避免模糊、缺失或 PNG 损坏。
+- 修复工具栏图标点击后只显示细空白框、无法进入设置的问题；
+- 移除不稳定的 React 工具栏弹窗入口；
+- 点击插件图标后，直接调用 Firefox 标准 `runtime.openOptionsPage()` 打开完整设置页；
+- 桌面版与 Android 版统一使用 `options.html`，避免两套入口行为不一致；
+- Firefox Android：支持 Firefox 120 及以上版本，设置页适配安全区和移动端触控尺寸；
+- 自动检查：TypeScript、Manifest、工具栏动作、设置页入口、扩展图标和 Mozilla `web-ext lint`；
+- 图标：采用 Firefox 原生支持的 SVG 矢量图标，小尺寸使用简化版本。
 
 ## 浏览器支持
 
 | 浏览器 | 状态 | 说明 |
 |---|---|---|
-| Firefox Desktop | ✅ 支持 | 工具栏弹窗与独立设置页均可用 |
-| Firefox Android 120+ | ✅ 支持 | 使用全屏设置页，适配移动端安全区 |
+| Firefox Desktop | ✅ 支持 | 点击工具栏图标直接打开完整设置页 |
+| Firefox Android 120+ | ✅ 支持 | 使用同一全屏设置页，适配移动端安全区 |
 | Chrome / Edge | ❌ 不包含 | 请使用上游项目提供的官方版本 |
 
 Firefox 与 Chromium 的 Cookie 数据结构存在差异，**不要让 Firefox 与 Chrome/Edge 使用同一个上传 UUID**，避免相互覆盖。
-
 
 ## 安全须知
 
