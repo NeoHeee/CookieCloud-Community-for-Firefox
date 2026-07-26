@@ -81,7 +81,7 @@ jobs:
           cp /tmp/cookiecloud-firefox-package/manifest.json /tmp/firefox-manifest.json
           test -s /tmp/firefox-manifest.json
 
-      - name: Verify Firefox manifest, settings pages, and icons
+      - name: Verify Firefox settings action, options page, and icons
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -109,17 +109,29 @@ jobs:
             if (!required.includes(permission)) throw new Error(`Missing data category: ${permission}`);
           }
 
-          if (manifest.browser_action?.default_popup !== 'popup.html') {
-            throw new Error(`Missing toolbar popup: ${manifest.browser_action?.default_popup}`);
+          if ('default_popup' in (manifest.browser_action ?? {})) {
+            throw new Error(`Toolbar popup must be removed: ${manifest.browser_action.default_popup}`);
           }
           if (manifest.options_ui?.page !== 'options.html' || manifest.options_ui?.open_in_tab !== true) {
             throw new Error(`Invalid Firefox options_ui: ${JSON.stringify(manifest.options_ui)}`);
           }
+          if (!fs.existsSync(path.join(packageRoot, 'options.html'))) {
+            throw new Error('Missing packaged options page: options.html');
+          }
+          if (fs.existsSync(path.join(packageRoot, 'popup.html'))) {
+            throw new Error('Broken popup entrypoint was packaged unexpectedly.');
+          }
 
-          for (const page of ['popup.html', 'options.html']) {
-            if (!fs.existsSync(path.join(packageRoot, page))) {
-              throw new Error(`Missing packaged settings entrypoint: ${page}`);
-            }
+          const collectJavaScript = directory => fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+            const fullPath = path.join(directory, entry.name);
+            if (entry.isDirectory()) return collectJavaScript(fullPath);
+            return entry.isFile() && entry.name.endsWith('.js') ? [fullPath] : [];
+          });
+          const opensOptionsPage = collectJavaScript(packageRoot).some(file =>
+            fs.readFileSync(file, 'utf8').includes('openOptionsPage')
+          );
+          if (!opensOptionsPage) {
+            throw new Error('Toolbar action does not call runtime.openOptionsPage().');
           }
 
           const expectedIcons = {
@@ -153,7 +165,7 @@ jobs:
             }
           }
 
-          console.log(`Firefox v${manifest.version} popup, options page, Android metadata, and icons verified.`);
+          console.log(`Firefox v${manifest.version} toolbar-to-options action, Android metadata, and icons verified.`);
           NODE
 
       - name: Lint packaged extension with Mozilla web-ext
