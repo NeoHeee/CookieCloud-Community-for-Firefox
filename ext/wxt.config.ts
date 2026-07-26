@@ -18,8 +18,7 @@ export default defineConfig({
     icons: extensionIcons,
     browser_action: {
       default_icon: extensionIcons,
-      default_title: 'CookieCloud',
-      default_popup: 'popup.html'
+      default_title: '打开 CookieCloud 设置'
     },
     options_ui: {
       page: 'options.html',
