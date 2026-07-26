@@ -86,6 +86,36 @@ button {
   min-height: 40px;
 }
 
+/* The Firefox options page uses the same React form as the toolbar popup,
+   but opens in a normal tab on Desktop and Android. */
+html.options-page,
+body.options-page,
+body.options-page #app {
+  width: 100%;
+  min-height: 100%;
+}
+
+body.options-page {
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+body.options-page #app {
+  display: flex;
+  justify-content: center;
+}
+
+body.options-page #app > div {
+  width: min(100%, 720px) !important;
+  max-width: 720px !important;
+  height: 100dvh !important;
+  min-height: 100dvh;
+  border-radius: 0 !important;
+  box-shadow: 0 0 24px rgb(15 23 42 / 10%) !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
