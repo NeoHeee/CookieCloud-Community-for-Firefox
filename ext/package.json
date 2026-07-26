@@ -3,7 +3,7 @@
   "displayName": "CookieCloud Community for Firefox",
   "description": "Synchronize Firefox cookies and optional Local Storage with a user-configured CookieCloud server.",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "wxt -b firefox",
