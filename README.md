@@ -11,7 +11,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Firefox-1.0.4-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.4">
+    <img src="https://img.shields.io/badge/Firefox-1.0.5-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.5">
     <img src="https://img.shields.io/badge/Desktop-supported-success" alt="Firefox Desktop supported">
     <img src="https://img.shields.io/badge/Android-Firefox%20120%2B-success" alt="Firefox Android 120+">
     <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0">
@@ -35,20 +35,21 @@
 
 ## 当前版本
 
-### Firefox v1.0.4
+### Firefox v1.0.5
 
-- Firefox Desktop：支持；
-- Firefox Android：支持 Firefox 120 及以上版本；
+- Firefox Desktop：支持工具栏弹窗和附加组件管理器中的独立设置页；
+- Firefox Android：支持 Firefox 120 及以上版本，可从扩展入口或管理页面打开全屏设置页；
+- 设置入口：新增标准 `options_ui`，并保留 `browser_action.default_popup`；
 - Android 页面：适配全屏扩展页面、底部安全区和移动端触控尺寸；
-- 自动检查：TypeScript、Manifest、扩展图标和 Mozilla `web-ext lint`；
+- 自动检查：TypeScript、Manifest、弹窗入口、设置页入口、扩展图标和 Mozilla `web-ext lint`；
 - 图标：采用 Firefox 原生支持的 SVG 矢量图标，小尺寸使用简化版本，避免模糊、缺失或 PNG 损坏。
 
 ## 浏览器支持
 
 | 浏览器 | 状态 | 说明 |
 |---|---|---|
-| Firefox Desktop | ✅ 支持 | 已完成桌面端功能测试 |
-| Firefox Android 120+ | 🧪 已适配 | Manifest 与移动布局已完成 |
+| Firefox Desktop | ✅ 支持 | 工具栏弹窗与独立设置页均可用 |
+| Firefox Android 120+ | ✅ 支持 | 使用全屏设置页，适配移动端安全区 |
 | Chrome / Edge | ❌ 不包含 | 请使用上游项目提供的官方版本 |
 
 Firefox 与 Chromium 的 Cookie 数据结构存在差异，**不要让 Firefox 与 Chrome/Edge 使用同一个上传 UUID**，避免相互覆盖。
