@@ -26,9 +26,10 @@ for (const locale of ['zh_CN', 'en']) {
 const optionsHtml = read('entrypoints/options/index.html');
 assert(optionsHtml.includes(`<title>${expectedName}</title>`), 'Options page title is not branded consistently.');
 
-const settingsApp = read('entrypoints/popup/App.tsx');
-assert(settingsApp.includes("browser.i18n.getMessage('appTitle')"), 'Settings heading must use the localized appTitle.');
-assert(!settingsApp.includes('>CookieCloud</h2>'), 'Legacy hard-coded settings heading is still present.');
+const optionsEntry = read('entrypoints/options/main.tsx');
+assert(optionsEntry.includes("browser.i18n.getMessage('appTitle')"), 'Settings page must read the localized appTitle.');
+assert(optionsEntry.includes('syncCommunityHeading'), 'Settings page must replace the legacy heading after rendering.');
+assert(optionsEntry.includes('heading.textContent = appTitle'), 'Settings heading is not updated to the community name.');
 
 const wxtConfig = read('wxt.config.ts');
 assert(wxtConfig.includes("default_title: '__MSG_openSettingsTitle__'"), 'Toolbar title must use the localized openSettingsTitle message.');
