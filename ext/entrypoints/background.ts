@@ -2,7 +2,7 @@ import { upload_cookie, download_cookie, load_data, save_data, sleep } from '../
 import browser from 'webextension-polyfill';
 
 export default defineBackground(() => {
-  console.log('CookieCloud Background Script Started', { id: browser.runtime.id });
+  console.log('CookieCloud Community for Firefox background started', { id: browser.runtime.id });
 
   // Do not use a toolbar popup. Firefox displayed the React popup as an empty,
   // collapsed panel on some desktop and Android builds. Opening the standard
@@ -11,7 +11,7 @@ export default defineBackground(() => {
     try {
       await browser.runtime.openOptionsPage();
     } catch (error) {
-      console.error('Failed to open CookieCloud settings:', error);
+      console.error('Failed to open CookieCloud Community for Firefox settings:', error);
     }
   });
 
