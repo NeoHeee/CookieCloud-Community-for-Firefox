@@ -3,7 +3,7 @@ import { load_data, save_data, remove_data } from '../utils/functions';
 export default defineContentScript({
   matches: ['<all_urls>'],
   main() {
-    console.log('CookieCloud Content Script Loaded');
+    console.log('CookieCloud Community for Firefox content script loaded');
     
     window.addEventListener("load", async () => {
       // Get current domain
