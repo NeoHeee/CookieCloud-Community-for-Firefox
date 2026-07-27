@@ -11,7 +11,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Firefox-1.0.6-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.6">
+    <img src="https://img.shields.io/badge/Firefox-1.0.7-FF7139?logo=firefox-browser&logoColor=white" alt="Firefox 1.0.7">
     <img src="https://img.shields.io/badge/Desktop-supported-success" alt="Firefox Desktop supported">
     <img src="https://img.shields.io/badge/Android-Firefox%20120%2B-success" alt="Firefox Android 120+">
     <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="GPL-3.0">
@@ -31,19 +31,18 @@
 服务端部署及其他浏览器版本请查看 [easychen/CookieCloud](https://github.com/easychen/CookieCloud)。
 
 ## 扩展商店
-- Firefox 浏览器扩展商店 [CookieCloud-Community](https://addons.mozilla.org/zh-CN/firefox/addon/cookiecloud-community)。
+- Firefox 浏览器扩展商店 [CookieCloud Community for Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/cookiecloud-community)。
 
 ## 当前版本
 
-### Firefox v1.0.6
+### Firefox v1.0.7
 
-- 修复工具栏图标点击后只显示细空白框、无法进入设置的问题；
-- 移除不稳定的 React 工具栏弹窗入口；
-- 点击插件图标后，直接调用 Firefox 标准 `runtime.openOptionsPage()` 打开完整设置页；
-- 桌面版与 Android 版统一使用 `options.html`，避免两套入口行为不一致；
-- Firefox Android：支持 Firefox 120 及以上版本，设置页适配安全区和移动端触控尺寸；
-- 自动检查：TypeScript、Manifest、工具栏动作、设置页入口、扩展图标和 Mozilla `web-ext lint`；
-- 图标：采用 Firefox 原生支持的 SVG 矢量图标，小尺寸使用简化版本。
+- 将扩展管理页、设置页、浏览器标签和工具栏提示统一为 `CookieCloud Community for Firefox`；
+- 更新中文与英文扩展简介，明确这是 Firefox 社区适配版；
+- 设置页标题改用本地化扩展名称，并优化长标题在窄屏上的换行显示；
+- 保留 `CookieCloud` 服务端、固定扩展 ID、存储键及同步协议名称，避免破坏兼容性；
+- 新增品牌一致性自动检查，防止后续构建重新出现旧显示名称；
+- 继续支持 Firefox Desktop 与 Firefox Android 120+。
 
 ## 浏览器支持
 
