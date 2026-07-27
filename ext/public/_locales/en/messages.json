@@ -1,10 +1,10 @@
 {
     "appTitle": {
-        "message": "CookieCloud"
+        "message": "CookieCloud Community for Firefox"
     },
     "appDesc": {
-        "message": "CookieCloud is a tool for syncing browser cookies to a self-hosted server.",
-        "description": "Uses end-to-end encryption to ensure your cookies are secure."
+        "message": "CookieCloud Community for Firefox securely synchronizes Firefox cookies and optional Local Storage with a server selected by the user.",
+        "description": "Data is encrypted locally before being sent to the configured CookieCloud server."
     },
     "test": {
         "message": "Test"
@@ -137,5 +137,8 @@
     },
     "cryptoAesCbcFixedDesc": {
         "message": "Uses standard AES-128-CBC algorithm with fixed IV (0x0)"
+    },
+    "openSettingsTitle": {
+        "message": "Open CookieCloud Community for Firefox settings"
     }
 }
